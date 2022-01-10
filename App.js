@@ -1,20 +1,45 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import AppLoading from 'expo-app-loading'
+import {
+    useFonts,
+    Inter_300Light,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Inter_800ExtraBold,
+} from '@expo-google-fonts/inter'
+
+import AppNavigator from './app/navigation/AppNavigator'
+import WordsContext from './app/context/WordsContext'
+import useStore from './app/hooks/useStore'
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+    const { data, getAllWords, updateWord, getWord, resetAllWords } = useStore()
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+    useEffect(() => {
+        getAllWords()
+    }, [])
+
+    let [fontsLoaded] = useFonts({
+        Inter_300Light,
+        Inter_400Regular,
+        Inter_500Medium,
+        Inter_600SemiBold,
+        Inter_700Bold,
+        Inter_800ExtraBold,
+    })
+
+    if (!fontsLoaded) {
+        return <AppLoading />
+    }
+
+    return (
+        <WordsContext.Provider value={{ words: data, updateWord, getWord, resetAllWords }}>
+            <NavigationContainer>
+                <AppNavigator />
+            </NavigationContainer>
+        </WordsContext.Provider>
+    )
+}
